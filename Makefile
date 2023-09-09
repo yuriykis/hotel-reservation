@@ -1,4 +1,5 @@
-BINARY_NAME=hotel-reservation
+BINARY_NAME=hotel-reservation-api
+
 build:
 	@go build -o bin/$(BINARY_NAME) -v
 
