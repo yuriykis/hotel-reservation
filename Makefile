@@ -7,6 +7,9 @@ build:
 run: build
 	@./bin/$(BINARY_NAME) $(ARGS)
 
+seed:
+	@go run scripts/seed.go
+
 test:
 	@go test -v ./...
 
