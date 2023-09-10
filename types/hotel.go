@@ -7,13 +7,15 @@ type Hotel struct {
 	Name     string               `bson:"name"          json:"name"`
 	Location string               `bson:"location"      json:"location"`
 	Rooms    []primitive.ObjectID `bson:"rooms"         json:"rooms"`
+	Rating   int                  `bson:"rating"        json:"rating"`
 }
 
-func NewHotel(name, location string, rooms []primitive.ObjectID) *Hotel {
+func NewHotel(name, location string, rooms []primitive.ObjectID, rating int) *Hotel {
 	return &Hotel{
 		Name:     name,
 		Location: location,
 		Rooms:    rooms,
+		Rating:   rating,
 	}
 }
 
