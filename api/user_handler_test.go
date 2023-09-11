@@ -37,7 +37,7 @@ func setup(t *testing.T) *testdb {
 		log.Fatal(err)
 	}
 	return &testdb{
-		UserStore: db.NewMongoUserStore(client, dbname),
+		UserStore: db.NewMongoUserStore(client),
 	}
 }
 
@@ -46,7 +46,10 @@ func TestPostUser(t *testing.T) {
 	defer tdb.teardown(t)
 
 	app := fiber.New()
-	userHandler := NewUserHandler(tdb.UserStore)
+	store := &db.Store{
+		User: tdb.UserStore,
+	}
+	userHandler := NewUserHandler(store)
 	app.Post("/", userHandler.HandlePostUser)
 
 	params := types.CreateUserParams{
