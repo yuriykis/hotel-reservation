@@ -30,18 +30,19 @@ const (
 )
 
 type Room struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Type      RoomType           `bson:"type"          json:"type"`
-	BasePrice float64            `bson:"basePrice"     json:"basePrice"`
-	Price     float64            `bson:"price"         json:"price"`
-	HotelID   primitive.ObjectID `bson:"hotelID"       json:"hotelID"`
+	ID      primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Type    RoomType           `bson:"type"          json:"type"`
+	Size    string             `bson:"size"          json:"size"`
+	Seaside bool               `bson:"seaside"       json:"seaside"`
+	Price   float64            `bson:"price"         json:"price"`
+	HotelID primitive.ObjectID `bson:"hotelID"       json:"hotelID"`
 }
 
-func NewRoom(roomType RoomType, basePrice float64, hotelID primitive.ObjectID) *Room {
+func NewRoom(roomType RoomType, price float64, hotelID primitive.ObjectID, size string) *Room {
 	return &Room{
-		Type:      roomType,
-		BasePrice: basePrice,
-		Price:     basePrice,
-		HotelID:   hotelID,
+		Type:    roomType,
+		Price:   price,
+		Size:    size,
+		HotelID: hotelID,
 	}
 }

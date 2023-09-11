@@ -22,9 +22,9 @@ var (
 func seedHotel(name, location string, rating int) {
 	hotel := types.NewHotel("Hilton", location, []primitive.ObjectID{}, rating)
 	rooms := []*types.Room{
-		types.NewRoom(types.SingleRoomType, 99.9, hotel.ID),
-		types.NewRoom(types.DoubleRoomType, 199.9, hotel.ID),
-		types.NewRoom(types.SeaSideRoomType, 199.9, hotel.ID),
+		types.NewRoom(types.SingleRoomType, 99.9, hotel.ID, "small"),
+		types.NewRoom(types.DoubleRoomType, 199.9, hotel.ID, "normal"),
+		types.NewRoom(types.SeaSideRoomType, 199.9, hotel.ID, "kingsize"),
 	}
 	insertedHotel, err := hotelStore.InsertHotel(ctx, hotel)
 	if err != nil {
