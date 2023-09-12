@@ -11,7 +11,7 @@ import (
 	"github.com/yuriykis/hotel-reservation/db"
 )
 
-func JWTAutentication(userStore *db.UserStore) fiber.Handler {
+func JWTAutentication(userStore db.UserStore) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token, ok := c.GetReqHeaders()["X-Api-Token"]
 		if !ok {
@@ -33,8 +33,12 @@ func JWTAutentication(userStore *db.UserStore) fiber.Handler {
 		if !ok {
 			return fmt.Errorf("unauthorized")
 		}
-		// TODO
-		fmt.Println(userID)
+		user, err := userStore.GetUserByID(c.Context(), userID)
+		if err != nil {
+			return fmt.Errorf("unauthorized")
+		}
+		// set the current user in the context
+		c.Context().SetUserValue("user", user)
 		return c.Next()
 	}
 }

@@ -75,7 +75,7 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 	if !ok {
 		return nil, err
 	}
-	user.ID = oid.Hex()
+	user.ID = oid
 	return user, nil
 }
 
