@@ -65,6 +65,7 @@ func AddUser(store *db.Store, fn, ln string, admin bool) *types.User {
 		Password:  fmt.Sprintf("%s_%s", fn, ln),
 	})
 	user.IsAdmin = admin
+
 	if err != nil {
 		log.Fatal(err)
 	}

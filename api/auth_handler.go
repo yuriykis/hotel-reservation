@@ -50,7 +50,6 @@ func (h *AuthHanlder) HandleAuthenticate(c *fiber.Ctx) error {
 		return err
 	}
 	user, err := h.userStore.GetUserByEmail(c.Context(), params.Email)
-
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return invalidCredentials(c)

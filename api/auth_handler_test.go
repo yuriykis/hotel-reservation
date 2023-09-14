@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,47 +10,24 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/yuriykis/hotel-reservation/db"
-	"github.com/yuriykis/hotel-reservation/types"
+	"github.com/yuriykis/hotel-reservation/db/fixtures"
 )
-
-func insertTestUser(t *testing.T, userStore db.UserStore) *types.User {
-	user, err := types.NewUserFromParams(types.CreateUserParams{
-		FirstName: "John",
-		LastName:  "Doe",
-		Email:     "eqwfwe@sverw.com",
-		Password:  "password",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, err = userStore.InsertUser(context.TODO(), user)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return user
-}
 
 func TestAuthenticateSuccess(t *testing.T) {
 	tdb := setup(t)
 	defer tdb.teardown(t)
 
-	insertedUser := insertTestUser(t, tdb.UserStore)
-
+	insertedUser := fixtures.AddUser(tdb.Store, "james", "foo", false)
 	app := fiber.New()
-	store := &db.Store{
-		User: tdb.UserStore,
-	}
-	authHandler := NewAuthHandler(store.User)
-	app.Post("/", authHandler.HandleAuthenticate)
+	authHandler := NewAuthHandler(tdb.User)
+	app.Post("/auth", authHandler.HandleAuthenticate)
 
 	params := AuthParams{
-		Email:    "eqwfwe@sverw.com",
-		Password: "password",
+		Email:    "james@foo.com",
+		Password: "james_foo",
 	}
 	b, _ := json.Marshal(params)
-	req := httptest.NewRequest("POST", "/", bytes.NewReader(b))
+	req := httptest.NewRequest("POST", "/auth", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := app.Test(req)
@@ -59,7 +35,12 @@ func TestAuthenticateSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("expected status code 200, got %d", resp.StatusCode)
+		var body genericResp
+		err := json.NewDecoder(resp.Body).Decode(&body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Fatalf("expected status code 200, got %d, msg: %s", resp.StatusCode, body.Msg)
 	}
 	var authResp AuthResponse
 	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
@@ -82,13 +63,10 @@ func TestAuthenticateWithWrongPassword(t *testing.T) {
 	tdb := setup(t)
 	defer tdb.teardown(t)
 
-	insertTestUser(t, tdb.UserStore)
+	fixtures.AddUser(tdb.Store, "James1", "Foo", false)
 
 	app := fiber.New()
-	store := &db.Store{
-		User: tdb.UserStore,
-	}
-	authHandler := NewAuthHandler(store.User)
+	authHandler := NewAuthHandler(tdb.User)
 	app.Post("/", authHandler.HandleAuthenticate)
 
 	params := AuthParams{

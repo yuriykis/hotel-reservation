@@ -18,7 +18,7 @@ func TestPostUser(t *testing.T) {
 
 	app := fiber.New()
 	store := &db.Store{
-		User: tdb.UserStore,
+		User: tdb.User,
 	}
 	userHandler := NewUserHandler(store)
 	app.Post("/", userHandler.HandlePostUser)
