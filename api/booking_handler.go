@@ -16,6 +16,35 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
+	id := c.Params("id")
+	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
+	if err != nil {
+		return err
+	}
+	user, err := getAuthUser(c)
+	if err != nil {
+		return err
+	}
+	if booking.UserID != user.ID {
+		return c.Status(fiber.StatusUnauthorized).JSON(genericResp{
+			Type: "error",
+			Msg:  "unauthorized",
+		})
+	}
+	update := bson.M{
+		"canceled": true,
+	}
+	if err := h.store.Booking.UpdateBooking(c.Context(), id, update); err != nil {
+		return err
+	}
+
+	return c.JSON(genericResp{
+		Type: "success",
+		Msg:  "booking updated",
+	})
+}
+
 func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	bookings, err := h.store.Booking.GetBookings(c.Context(), bson.M{})
 	if err != nil {
@@ -30,6 +59,16 @@ func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 	if err != nil {
 		return err
+	}
+	user, err := getAuthUser(c)
+	if err != nil {
+		return err
+	}
+	if booking.UserID != user.ID {
+		return c.Status(fiber.StatusUnauthorized).JSON(genericResp{
+			Type: "error",
+			Msg:  "unauthorized",
+		})
 	}
 	return c.JSON(booking)
 }

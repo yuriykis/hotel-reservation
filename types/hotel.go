@@ -37,9 +37,10 @@ type Room struct {
 	HotelID primitive.ObjectID `bson:"hotelID"       json:"hotelID"`
 }
 
-func NewRoom(price float64, hotelID primitive.ObjectID, size string) *Room {
+func NewRoom(price float64, seaside bool, hotelID primitive.ObjectID, size string) *Room {
 	return &Room{
 		Price:   price,
+		Seaside: seaside,
 		Size:    size,
 		HotelID: hotelID,
 	}

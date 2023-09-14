@@ -54,10 +54,13 @@ func (s *MongoUserStore) GetUserByEmail(ctx context.Context, email string) (*typ
 	return &user, nil
 }
 
-func (s *MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, params types.UpdateUserParams) error {
-
+func (s *MongoUserStore) UpdateUser(
+	ctx context.Context,
+	filter bson.M,
+	params types.UpdateUserParams,
+) error {
 	update := bson.M{
-		"$set": params.ToBSON(),
+		"$set": params,
 	}
 	_, err := s.coll.UpdateOne(ctx, filter, update)
 	if err != nil {

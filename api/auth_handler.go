@@ -60,14 +60,14 @@ func (h *AuthHanlder) HandleAuthenticate(c *fiber.Ctx) error {
 	if !types.IsValidPassword(user.EncryptedPassword, params.Password) {
 		return invalidCredentials(c)
 	}
-	token := createTokenFromUser(user)
+	token := CreateTokenFromUser(user)
 	return c.JSON(AuthResponse{
 		User:  user,
 		Token: token,
 	})
 }
 
-func createTokenFromUser(user *types.User) string {
+func CreateTokenFromUser(user *types.User) string {
 	now := time.Now()
 	expires := now.Add(time.Hour * 4).Unix()
 	claims := jwt.MapClaims{

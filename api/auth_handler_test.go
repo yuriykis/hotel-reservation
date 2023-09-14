@@ -22,7 +22,6 @@ func insertTestUser(t *testing.T, userStore db.UserStore) *types.User {
 		Email:     "eqwfwe@sverw.com",
 		Password:  "password",
 	})
-
 	if err != nil {
 		t.Fatal(err)
 	}
