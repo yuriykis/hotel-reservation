@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -53,8 +52,6 @@ func TestAuthenticateSuccess(t *testing.T) {
 	// Set the encrypted password to empty string to be able to compare the user
 	insertedUser.EncryptedPassword = ""
 	if !reflect.DeepEqual(insertedUser, authResp.User) {
-		fmt.Println(insertedUser)
-		fmt.Println(authResp.User)
 		t.Fatal("expected the user to be present in the auth response")
 	}
 }
@@ -92,6 +89,9 @@ func TestAuthenticateWithWrongPassword(t *testing.T) {
 		t.Fatalf("expected the response type to be error, but got %s", authResp.Type)
 	}
 	if authResp.Msg != "invalid credentials" {
-		t.Fatalf("expected the response msg to be 'invalid credentials', but got %s", authResp.Msg)
+		t.Fatalf(
+			"expected the response msg to be 'invalid credentials', but got %s",
+			authResp.Msg,
+		)
 	}
 }
