@@ -1,4 +1,4 @@
-package middleware
+package api
 
 import (
 	"fmt"
@@ -15,11 +15,11 @@ func JWTAutentication(userStore db.UserStore) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		token, ok := c.GetReqHeaders()["X-Api-Token"]
 		if !ok {
-			return fmt.Errorf("unauthorized")
+			return ErrUnauthorized()
 		}
 		claims, err := validateToken(token)
 		if err != nil {
-			return err
+			return ErrUnauthorized()
 		}
 		expiresFloat := claims["expires"].(float64)
 		// if time.Now().After(time.Unix(int64(expires), 0)) {
@@ -27,15 +27,15 @@ func JWTAutentication(userStore db.UserStore) fiber.Handler {
 		// }
 		expires := int64(expiresFloat)
 		if time.Now().Unix() > expires {
-			return fmt.Errorf("token expired")
+			return NewError(fiber.StatusUnauthorized, "token expired")
 		}
 		userID, ok := claims["id"].(string)
 		if !ok {
-			return fmt.Errorf("unauthorized")
+			return ErrUnauthorized()
 		}
 		user, err := userStore.GetUserByID(c.Context(), userID)
 		if err != nil {
-			return fmt.Errorf("unauthorized")
+			return ErrUnauthorized()
 		}
 		// set the current user in the context
 		c.Context().SetUserValue("user", user)
@@ -47,7 +47,7 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			log.Println("Unexpected signing method")
-			return nil, fmt.Errorf("unauthorized")
+			return nil, ErrUnauthorized()
 		}
 		secret := os.Getenv("JWT_SECRET")
 		log.Println(secret)
@@ -55,14 +55,14 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 	})
 	if err != nil {
 		log.Println(err)
-		return nil, fmt.Errorf("unauthorized")
+		return nil, ErrUnauthorized()
 	}
 	if !token.Valid {
 		fmt.Println("Token is not valid")
-		return nil, fmt.Errorf("unauthorized")
+		return nil, ErrUnauthorized()
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	}
-	return nil, fmt.Errorf("unauthorized")
+	return nil, ErrUnauthorized()
 }
