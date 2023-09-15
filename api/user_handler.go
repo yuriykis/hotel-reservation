@@ -6,7 +6,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/yuriykis/hotel-reservation/db"
 	"github.com/yuriykis/hotel-reservation/types"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -33,7 +32,7 @@ func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 	if err != nil {
 		return ErrInvalidID()
 	}
-	filter := bson.M{"_id": oid}
+	filter := db.Map{"_id": oid}
 	if err := h.store.User.UpdateUser(c.Context(), filter, params); err != nil {
 		return err
 	}

@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/yuriykis/hotel-reservation/db"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,7 +22,7 @@ func (h *HotelHandler) HandleGetRooms(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"hotelID": oid}
+	filter := db.Map{"hotelID": oid}
 
 	rooms, err := h.store.Room.GetRooms(c.Context(), filter)
 	if err != nil {
@@ -42,11 +41,7 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 
 func (h *HotelHandler) HandleGetHotel(c *fiber.Ctx) error {
 	id := c.Params("id")
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return ErrInvalidID()
-	}
-	hotel, err := h.store.Hotel.GetHotelByID(c.Context(), oid)
+	hotel, err := h.store.Hotel.GetHotelByID(c.Context(), id)
 	if err != nil {
 		return ErrResourceNotFound("hotel")
 	}

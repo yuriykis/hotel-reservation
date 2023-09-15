@@ -13,7 +13,7 @@ const roomColl = "rooms"
 
 type RoomStore interface {
 	InsertRoom(context.Context, *types.Room) (*types.Room, error)
-	GetRooms(context.Context, bson.M) ([]*types.Room, error)
+	GetRooms(context.Context, Map) ([]*types.Room, error)
 }
 
 type MongoRoomStore struct {
@@ -31,7 +31,7 @@ func NewMongoRoomStore(client *mongo.Client, hotelStore HotelStore) *MongoRoomSt
 	}
 }
 
-func (s *MongoRoomStore) GetRooms(ctx context.Context, filter bson.M) ([]*types.Room, error) {
+func (s *MongoRoomStore) GetRooms(ctx context.Context, filter Map) ([]*types.Room, error) {
 	cur, err := s.coll.Find(ctx, filter)
 	if err != nil {
 		return nil, err
@@ -65,8 +65,8 @@ func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*typ
 	}
 	room.ID = roomID
 
-	filter := bson.M{"_id": room.HotelID}
-	update := bson.M{
+	filter := Map{"_id": room.HotelID}
+	update := Map{
 		"$push": bson.M{
 			"rooms": roomID,
 		},
