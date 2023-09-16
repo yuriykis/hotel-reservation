@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -43,8 +44,10 @@ func setup(t *testing.T) *testdb {
 }
 
 func init() {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal(err)
+	if strings.HasSuffix(os.Args[0], ".test") {
+		err := godotenv.Load("../.env")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

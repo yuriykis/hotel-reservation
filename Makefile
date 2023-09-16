@@ -16,3 +16,8 @@ test:
 test-race:
 	@go test -v ./... --race
 	
+docker:
+	echo "Building docker image"
+	docker build -t api .
+	echo "Running docker image"
+	docker run -p 5001:5001 api
